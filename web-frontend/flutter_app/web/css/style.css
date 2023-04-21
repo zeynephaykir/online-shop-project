@@ -1851,7 +1851,9 @@
      color: #ffffff;
      border: none;
 }
-
+ .wishlist-box-main{
+     padding: 70px 0px;
+}
  .services-box-main{
      padding: 70px 0px;
 }
