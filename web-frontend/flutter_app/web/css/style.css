@@ -1136,7 +1136,9 @@
  .all-title-box .breadcrumb-item + .breadcrumb-item::before{
      color: #000000;
 }
- 
+ .about-box-main{
+     padding: 70px 0px;
+}
  .noo-sh-title{
      font-size: 28px;
      text-transform: uppercase;
@@ -1151,13 +1153,25 @@
      font-weight: 700;
 	 margin-bottom: 0px;
 }
- 
+ .about-box-main p{
+     padding-bottom: 20px;
+}
  .service-block-inner {
      padding: 15px 20px;
      position: relative;
      margin-bottom: 30px;
 }
 
+.about-box-main a{
+	color: #ffffff;
+	font-size: 18px;
+	font-weight: 700;
+	border: none;
+}
+
+.about-box-main a.btn{
+	padding: 12px 15px;
+}
 
  .service-block-inner::before {
      content: "";
@@ -1887,33 +1901,33 @@
      padding-right: 6px;
      color: #b0b435;
 }
-.contact-info-left ul li p a:hover{
-    color: #b0b435;
+ .contact-info-left ul li p a:hover{
+     color: #b0b435;
 }
-.contact-form-right{
-    padding: 20px;
+ .contact-form-right{
+     padding: 20px;
 }
-.contact-form-right h2{
-    font-size: 24px;
-    font-weight: 700;
+ .contact-form-right h2{
+     font-size: 24px;
+     font-weight: 700;
 }
-.contact-form-right p{
-    margin-bottom: 15px;
+ .contact-form-right p{
+     margin-bottom: 15px;
 }
-.contact-form-right .form-group .form-control::-moz-placeholder{
-    color: #999999;
+ .contact-form-right .form-group .form-control::-moz-placeholder{
+     color: #999999;
 }
-.contact-form-right .form-group .form-control{
-    border-radius: 0px;
-    min-height: 40px;
+ .contact-form-right .form-group .form-control{
+     border-radius: 0px;
+     min-height: 40px;
 }
-.contact-form-right .form-group {
-    margin-bottom: 30px;
-    position: relative;
+ .contact-form-right .form-group {
+     margin-bottom: 30px;
+     position: relative;
 }
-.contact-form-right .form-group .form-control:focus{
-    border: 1px solid #b0b435;
-    box-shadow: none;
+ .contact-form-right .form-group .form-control:focus{
+     border: 1px solid #b0b435;
+     box-shadow: none;
 }
  .submit-button button{
      padding: 10px 20px;
