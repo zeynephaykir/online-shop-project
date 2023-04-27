@@ -14,6 +14,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const Customer = db.collection("customers");
-//module.exports = Customer;
+module.exports = Customer;
 
 //https://www.youtube.com/watch?v=YPsftzOURLw&ab_channel=SyedZano 9. dakikadan devam
