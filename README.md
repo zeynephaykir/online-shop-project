@@ -9,7 +9,7 @@ npm install prettier
 
 ####Install Postman
 
-####Configure MongoDB
+####Configure MongoDB, add your IP Address to Whitelist
 
 npm install nodemon
 
