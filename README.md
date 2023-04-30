@@ -28,3 +28,10 @@ npm install morgan
 npm install mongoose
 
 npm install cors
+
+###Password hashing
+npm install bcryptjs
+
+npm i jsonwebtoken
+
+npm i express-jwt
