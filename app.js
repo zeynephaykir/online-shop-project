@@ -17,6 +17,7 @@ app.options("*", cors());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 app.use(authJwt());
+
 // app.use((err, req, res, next) => {
 //     if(err){
 //         res.status(500).json({message: "error in the server"})
