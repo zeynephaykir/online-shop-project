@@ -35,3 +35,6 @@ npm install bcryptjs
 npm i jsonwebtoken
 
 npm i express-jwt
+
+###For image upload
+npm i multer
