@@ -1,6 +1,6 @@
-npm init
-
 npm install
+
+npm start 
 
 ####These two should suffice
 

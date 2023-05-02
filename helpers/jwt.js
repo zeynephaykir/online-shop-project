@@ -11,7 +11,6 @@ function authJwt() {
             { url: /\/public\/uploads(.*)/, methods: ["GET", "OPTIONS"] },
             { url: '/favicon.ico', methods: ["GET", "OPTIONS"] },
             { url: /\/api\/v1\/products(.*)/, methods: ["GET", "OPTIONS"] },
-            { url: /\/api\/v1\/categories(.*)/, methods: ["GET", "OPTIONS"] },
             "/api/v1/users/login",
             "/api/v1/users/register",
         ],

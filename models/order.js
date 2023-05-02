@@ -17,15 +17,15 @@ const orderSchema = mongoose.Schema({
     },
     city: {
         type: String,
-        required: true,
+        default: ""
     },
     zip: {
         type: String,
-        required: true,
+        default: ""
     },
     country: {
         type: String,
-        required: true,
+        default: ""
     },
     phone: {
         type: String,

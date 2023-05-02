@@ -29,7 +29,7 @@ router.get(`/:id`, async (req, res) => {
 
 router.get(`/get/userorders/:userid`, async (req, res) => {
     const userOrderList = await Order.find({user: req.params.userid})
-        .populate({ path: "orderItems", populate: {path: "product", populate: "category"} })
+        .populate({ path: "orderItems", populate: {path: "product", populate: "name"} })
         .sort({ dateOrdered: -1 });
 
     if (!userOrderList) {

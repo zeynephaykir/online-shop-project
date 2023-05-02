@@ -29,13 +29,12 @@ router.post(`/`, async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         passwordHash: bcrypt.hashSync(req.body.password, 10),
-        street: req.body.street,
-        apartment: req.body.apartment,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
+        homeAddress: req.body.homeAddress,
         phone: req.body.phone,
+        taxId: req.body.taxId,
         isAdmin: req.body.isAdmin,
+        isProductManager: req.body.isProductManager,
+        isSalesManager: req.body.isSalesManager,
     });
     user = await user.save();
 
@@ -51,13 +50,12 @@ router.post(`/register`, async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         passwordHash: bcrypt.hashSync(req.body.password, 10),
-        street: req.body.street,
-        apartment: req.body.apartment,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
+        homeAddress: req.body.homeAddress,
         phone: req.body.phone,
+        taxId: req.body.taxId,
         isAdmin: req.body.isAdmin,
+        isProductManager: req.body.isProductManager,
+        isSalesManager: req.body.isSalesManager,
     });
     user = await user.save();
 

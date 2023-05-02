@@ -27,21 +27,19 @@ app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
 
 //Routers
 const productsRouter = require("./routers/products");
-const categoriesRouter = require("./routers/categories");
 const usersRouter = require("./routers/users");
 const ordersRouter = require("./routers/orders");
 
 const api = process.env.API_URL;
 
 app.use(`${api}/products`, productsRouter);
-app.use(`${api}/categories`, categoriesRouter);
 app.use(`${api}/users`, usersRouter);
 app.use(`${api}/orders`, ordersRouter);
 
 // Database connection
 mongoose
     .connect(process.env.CONNECTION_STRING, {
-        dbName: "tutorial-eshop",
+        dbName: "308-finaldb",
     })
     .then(() => {
         console.log("Database connection is ready");

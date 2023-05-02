@@ -13,23 +13,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    street: {
-        type: String,
-        default: "",
-    },
-    apartment: {
-        type: String,
-        default: "",
-    },
-    city: {
-        type: String,
-        default: "",
-    },
-    zip: {
-        type: String,
-        default: "",
-    },
-    country: {
+    homeAddress: {
         type: String,
         default: "",
     },
@@ -37,10 +21,22 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    taxId: {
+        type: String,
+        default: "",
+    },
     isAdmin: {
         type: Boolean,
         default: false,
     },
+    isProductManager: {
+        type: Boolean,
+        default: false,
+    },
+    isSalesManager: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 userSchema.virtual("id").get(function () {
