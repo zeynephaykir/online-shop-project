@@ -52,7 +52,7 @@ function fetchAndRenderProducts(sortOption) {
           </div>
           <div class="why-text">
             <h4>${product.name}</h4>
-            <h5>$${product.price.toFixed(2)}</h5>
+            <h5>$ ${product.price.toFixed(2)}</h5>
           </div>
         `;
 
