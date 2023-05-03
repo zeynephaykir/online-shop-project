@@ -19,25 +19,25 @@ function fetchAndRenderProductsSearch(query) {
                 );
 
                 productDiv.innerHTML = `
-                <div class="box-img-hover">
-                  <div class="type-lb">
-                    <p class="sale">Sale</p>
-                  </div>
-                  <img src="${product.image}" class="img-fluid" alt="Image">
-                  <div class="mask-icon">
-                    <ul>
-                      <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
-                      <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
-                      <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
-                    </ul>
-                    <a class="cart" href="#">Add to Cart</a>
-                  </div>
+              <div class="box-img-hover">
+                <div class="type-lb">
+                  <p class="sale">Sale</p>
                 </div>
-                <div class="why-text">
-                  <h4>${product.name}</h4>
-                  <h5>$${product.price.toFixed(2)}</h5>
+                <img src="${product.image}" class="img-fluid" alt="Image">
+                <div class="mask-icon">
+                  <ul>
+                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                  </ul>
+                  <a class="cart" href="#">Add to Cart</a>
                 </div>
-              `;
+              </div>
+              <div class="why-text">
+                <h4>${product.name}</h4>
+                <h5>$${product.price.toFixed(2)}</h5>
+              </div>
+            `;
 
                 productRow.appendChild(productDiv);
             });
