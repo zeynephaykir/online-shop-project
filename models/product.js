@@ -46,6 +46,11 @@ const productSchema = mongoose.Schema({
             ref: "Feedback",
         },
     ],
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+    },
     isFeatured: {
         type: Boolean,
         default: false,

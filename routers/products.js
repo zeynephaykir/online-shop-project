@@ -1,5 +1,6 @@
 const express = require("express");
 const { Product } = require("../models/product");
+const { Category } = require("../models/category");
 const router = express.Router();
 const mongoose = require("mongoose");
 const multer = require("multer");
@@ -37,7 +38,7 @@ router.get(`/`, async (req, res) => {
     //     filter =  {category: req.query.categories.split(',')}
     // }
 
-    const productList = await Product.find();
+    const productList = await Product.find().populate("category");
     //const productList = await Product.find({category: filter}).populate('category')
 
     if (!productList) {
@@ -47,7 +48,7 @@ router.get(`/`, async (req, res) => {
 });
 
 router.get(`/:id`, async (req, res) => {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("category");
 
     if (!product) {
         res.status(500).json({ success: false });
@@ -57,12 +58,12 @@ router.get(`/:id`, async (req, res) => {
 
 //without middleware, this request returns as undefined in the console
 router.post(`/`, uploadOptions.single("image"), async (req, res) => {
-    //solution to non existent category id
-    // const category = await Category.findById(req.body.category);
+    // solution to non existent category id
+    const category = await Category.findById(req.body.category);
 
-    // if (!category) {
-    //     return res.status(400).send("invalid category");
-    // }
+    if (!category) {
+        return res.status(400).send("invalid category");
+    }
 
     const file = req.file;
     if (!file) {
@@ -79,6 +80,7 @@ router.post(`/`, uploadOptions.single("image"), async (req, res) => {
         image: `${basePath}${fileName}`,
         images: req.body.images,
         price: req.body.price,
+        category: req.body.category, //what if categoryid does not exist?
         warrantyStatus: req.body.warrantyStatus,
         countInStock: req.body.countInStock,
         distributor: req.body.distributor,
@@ -106,9 +108,10 @@ router.put(`/:id`, async (req, res) => {
             name: req.body.name,
             description: req.body.description,
             model: req.body.model,
-            image: `${basePath}${fileName}`,
+           // image: `${basePath}${fileName}`,
             images: req.body.images,
             price: req.body.price,
+            category: req.body.category, //what if categoryid does not exist?
             warrantyStatus: req.body.warrantyStatus,
             countInStock: req.body.countInStock,
             distributor: req.body.distributor,
