@@ -23,7 +23,7 @@ const productSchema = mongoose.Schema({
         },
     ],
     price: {
-        type: String,
+        type: Number,
         default: 0,
     },
     warrantyStatus: {
@@ -46,6 +46,10 @@ const productSchema = mongoose.Schema({
             ref: "Feedback",
         },
     ],
+    sales: {
+        type: Number,
+        default: 0,
+    },
     isFeatured: {
         type: Boolean,
         default: false,

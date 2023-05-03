@@ -31,6 +31,7 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
+/*
 router.get(`/`, async (req, res) => {
     // let filter = {};
     // if(req.query.categories){
@@ -44,6 +45,42 @@ router.get(`/`, async (req, res) => {
         res.status(500).json({ success: false });
     }
     res.send(productList);
+});
+*/
+
+router.get("/", (req, res) => {
+    Product.find()
+        .then((products) => {
+            res.json(products);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                error: err,
+                success: false,
+            });
+        });
+});
+
+// Search products by name or description
+router.get("/search", (req, res) => {
+    const searchTerm = req.query.q;
+
+    // Find products that match the search term in either the name or description
+    Product.find({
+        $or: [
+            { name: { $regex: searchTerm, $options: "i" } },
+            { description: { $regex: searchTerm, $options: "i" } },
+        ],
+    })
+        .then((products) => {
+            res.json(products);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                error: err,
+                success: false,
+            });
+        });
 });
 
 router.get(`/:id`, async (req, res) => {
