@@ -1,4 +1,4 @@
-function fetchAndRenderProducts(sortOption) {
+function fetchAndRenderProductsL(sortOption) {
     fetch("http://localhost:3000/api/v1/products")
         .then((response) => response.json())
         .then((products) => {
@@ -78,11 +78,11 @@ function fetchAndRenderProducts(sortOption) {
         });
 }
 
-fetchAndRenderProducts("1"); // Call the function with the initial value "1" for the default sorting option
+fetchAndRenderProductsL("1"); // Call the function with the initial value "1" for the default sorting option
 
 document.addEventListener("change", (event) => {
     if (event.target.id === "basic") {
         console.log("Select option changed");
-        fetchAndRenderProducts(event.target.value);
+        fetchAndRenderProductsL(event.target.value);
     }
 });

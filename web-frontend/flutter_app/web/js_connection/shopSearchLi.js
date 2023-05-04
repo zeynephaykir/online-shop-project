@@ -1,4 +1,4 @@
-function renderListProduct(product) {
+function renderListProductL(product) {
     const productRow = document.createElement("div");
     productRow.classList.add("list-view-box", "row");
 
@@ -51,7 +51,7 @@ function renderListProduct(product) {
     return productRow;
 }
 
-function fetchAndRenderProductsSearch(query) {
+function fetchAndRenderProductsSearchL(query) {
     fetch(`http://localhost:3000/api/v1/products/search?q=${query}`)
         .then((response) => response.json())
         .then((products) => {
@@ -74,6 +74,6 @@ document.getElementById("search-form").addEventListener("submit", (event) => {
     const query = searchInput.value.trim();
 
     if (query) {
-        fetchAndRenderProductsSearch(query);
+        fetchAndRenderProductsSearchL(query);
     }
 });
