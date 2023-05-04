@@ -59,3 +59,7 @@ main {
 .rating span{
   color:orange;
 }
+
+.img-thumbnail {
+  height: 80px;
+}
