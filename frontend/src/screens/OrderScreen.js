@@ -11,6 +11,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { Store } from '../Store';
 import { getError } from '../utils';
+import { toast } from 'react-toastify';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -20,7 +21,14 @@ function reducer(state, action) {
       return { ...state, loading: false, order: action.payload, error: '' };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
-
+      case 'PAY_REQUEST':
+        return { ...state, loadingPay: true };
+      case 'PAY_SUCCESS':
+        return { ...state, loadingPay: false, successPay: true };
+      case 'PAY_FAIL':
+        return { ...state, loadingPay: false };
+      case 'PAY_RESET':
+        return { ...state, loadingPay: false, successPay: false };
     default:
       return state;
   }
@@ -33,11 +41,37 @@ export default function OrderScreen() {
   const { id: orderId } = params;
   const navigate = useNavigate();
 
-  const [{ loading, error, order }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, order, successPay, loadingPay }, dispatch] =
+  useReducer(reducer, {
     loading: true,
     order: {},
     error: '',
+    successPay: false,
+    loadingPay: false,
   });
+
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function (details) {
+      try {
+        dispatch({ type: 'PAY_REQUEST' });
+        const { data } = await axios.put(
+          `/api/orders/${order._id}/pay`,
+          details,
+          {
+            headers: { authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        dispatch({ type: 'PAY_SUCCESS', payload: data });
+        toast.success('Order is paid');
+      } catch (err) {
+        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        toast.error(getError(err));
+      }
+    });
+  }
+  function onError(err) {
+    toast.error(getError(err));
+  }
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -55,7 +89,7 @@ export default function OrderScreen() {
     if (!userInfo) {
       return navigate('/login');
     }
-    if (!order._id || (order._id && order._id !== orderId)) {
+    if (!order._id || successPay || (order._id && order._id !== orderId)) {
       fetchOrder();
     }
   }, [order, userInfo, orderId, navigate]);
