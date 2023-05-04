@@ -8,6 +8,7 @@ body {
 }
 
 
+/*
 header {
   background-color: darkseagreen;
   padding: 1rem;
@@ -18,13 +19,18 @@ header a {
   font-weight: bold;
   text-decoration: none;
 }
-
+*/
 .site-container {
   min-height: 100vh;
 }
 
 main {
   flex: 1;
+}
+
+.btn-primary{
+  background-color: seagreen;
+  color:aliceblue;
 }
 .products {
   display: flex;
@@ -44,4 +50,8 @@ main {
 
 .product-info {
   padding: 1rem;
+}
+
+.rating span{
+  color:orange;
 }
