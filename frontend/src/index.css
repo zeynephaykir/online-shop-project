@@ -29,8 +29,8 @@ main {
 }
 
 .btn-primary{
-  background-color: seagreen;
-  color:aliceblue;
+  background-color: #92c15b;
+  color:white;
 }
 .products {
   display: flex;
@@ -57,9 +57,13 @@ main {
 }
 
 .rating span{
-  color:orange;
+  color: #ff914d;
 }
 
 .img-thumbnail {
   height: 80px;
+}
+
+.small-container {
+  max-width: 600px;
 }
