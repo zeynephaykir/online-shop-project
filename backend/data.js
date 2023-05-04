@@ -1,6 +1,7 @@
 const data = {
     products: [
         {
+            _id: '1',
             name: 'Rainbow Floral Crochet Vest',
             slug: 'rainbow-vest',
             category: 'Vests',
@@ -12,6 +13,7 @@ const data = {
             numReviews: 10
         },
         {
+            _id: '2',
             name: 'Brown Floral Crochet Top',
             slug: 'brown-floral-top',
             category: 'Crochet Tops',
@@ -23,6 +25,7 @@ const data = {
             numReviews: 4
         },
         {
+            _id: '3',
             name: 'Blue Crochet Bucket Hat',
             slug: 'bucket-hat',
             category: 'Hats',
@@ -34,6 +37,7 @@ const data = {
             numReviews: 2
         },
         {
+            _id: '4',
             name: 'Crochet Crop Top',
             slug: 'crochet-crop-top',
             category: 'Crochet Tops',
@@ -45,6 +49,7 @@ const data = {
             numReviews: 7
         },
         {
+            _id: '5',
             name: 'Ecru Floral Crochet Cardigan',
             slug: 'ecru-floral-cardigan',
             category: 'Cardigans',
