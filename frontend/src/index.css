@@ -52,6 +52,10 @@ main {
   padding: 1rem;
 }
 
+.img-large{
+  max-width: 100%;
+}
+
 .rating span{
   color:orange;
 }

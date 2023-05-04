@@ -28,7 +28,7 @@ const data = {
             category: 'Hats',
             image: '/images/p3.jpg',
             price: 70,
-            countInStock: 6,
+            countInStock: 0,
             brand:'Crochet by Sarin',
             rating: 5,
             numReviews: 2
