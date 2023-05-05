@@ -81,7 +81,7 @@ function App() {
                 <i className="fas fa-bars"></i>
               </Button>
               <LinkContainer to="/">
-                <Navbar.Brand style={{ color:'#ff5757' }}>Crochet By Sarin</Navbar.Brand>
+                <Navbar.Brand> &nbsp; Crochet By Sarin</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
@@ -158,7 +158,7 @@ function App() {
                   }}
                   onClick={() => setSidebarIsOpen(false)}
                 >
-                  <Nav.Link>{category}</Nav.Link>
+                  <Nav.Link >{category}</Nav.Link>
                 </LinkContainer>
               </Nav.Item>
             ))}

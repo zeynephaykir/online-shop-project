@@ -82,13 +82,14 @@ main {
 /* sidebar */
 .navbar-brand {
   font-weight: bold;
+  color: #545454
 }
 .side-navbar {
   width: 240px;
   height: 100%;
   position: absolute;
   left: -300px;
-  background-color: #100901;
+  background-color: #545454;
   transition: 0.5s;
 }
 
