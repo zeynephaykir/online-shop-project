@@ -89,10 +89,13 @@ main {
   height: 100%;
   position: absolute;
   left: -300px;
-  background-color: #545454;
+  background-color: #729e60;
   transition: 0.5s;
 }
 
+.nav-link {
+  color:#404040;
+}
 .site-container {
   transition: 0.4s;
 }
