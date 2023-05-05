@@ -6,6 +6,7 @@ import Product from '../models/productModel.js';
 import { isAuth, isAdmin } from '../utils.js';
 
 const orderRouter = express.Router();
+
 orderRouter.post(
   '/',
   isAuth,

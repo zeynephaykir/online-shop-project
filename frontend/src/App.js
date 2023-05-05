@@ -30,7 +30,8 @@ import AdminRoute from './components/AdminRoute';
 import DashboardScreen from './screens/DashboardScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
-
+import UserListScreen from './screens/UserListScreen';
+import UserEditScreen from './screens/UserEditScreen';
 
 
 function App() {
@@ -208,6 +209,14 @@ function App() {
                   </AdminRoute>
                 }
               ></Route>
+              <Route
+                path="/admin/users"
+                element={
+                  <AdminRoute>
+                    <UserListScreen />
+                  </AdminRoute>
+                }
+              ></Route>
                <Route
                 path="/admin/products"
                 element={
@@ -224,6 +233,14 @@ function App() {
                     </AdminRoute>
                   }
                 ></Route>
+                 <Route
+                path="/admin/user/:id"
+                element={
+                  <AdminRoute>
+                    <UserEditScreen />
+                  </AdminRoute>
+                }
+              ></Route>
               
               <Route path="/" element={<HomeScreen />} />
             </Routes>
