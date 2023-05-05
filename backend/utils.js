@@ -43,8 +43,9 @@ export const isAdmin = (req, res, next) => {
 
 export const mailgun = () =>
   mg({
-    apiKey: '5ae253d8040221ea1af203203937d81a-102c75d8-2696bf60',
+    apiKey: '30f3a0c5698fbe19bb0ad1a996e1f37a-102c75d8-3063d60c',
     domain: 'sandbox58aba97c80c34fabb117ca2643deea62',
+    host: "api.eu.mailgun.net"
   });
 
 export const payOrderEmailTemplate = (order) => {

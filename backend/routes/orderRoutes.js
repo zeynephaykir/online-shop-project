@@ -106,12 +106,29 @@ orderRouter.put(
     '/:id/deliver',
     isAuth,
     expressAsyncHandler(async (req, res) => {
-        const order = await Order.findById(req.params.id);
+        const order = await Order.findById(req.params.id).populate('user', 'email name');
         if (order) {
             order.isDelivered = true;
             order.deliveredAt = Date.now();
             await order.save();
             res.send({ message: 'Order Delivered' });
+            mailgun()
+                .messages()
+                .send(
+                    {
+                        from: 'Mailgun Sandbox <postmaster@sandbox58aba97c80c34fabb117ca2643deea62.mailgun.org>',
+                        to: `<ali.sinan.cet@gmail.com>`,
+                        subject: `New order ${order._id}`,
+                        html: payOrderEmailTemplate(order),
+                    },
+                    (error, body) => {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log(body);
+                        }
+                    }
+                );
         } else {
             res.status(404).send({ message: 'Order Not Found' });
         }

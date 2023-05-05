@@ -107,7 +107,7 @@ productRouter.post(
   })
 );
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 6;
 
 productRouter.get(
   '/admin',
