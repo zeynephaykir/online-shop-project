@@ -6,6 +6,8 @@
     "cloudinary": "^1.36.4",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
+    "mailgun": "^0.5.0",
+    "mailgun-js": "^0.22.0",
     "prettier": "^2.8.8",
     "react-bootstrap": "^2.7.4",
     "react-google-charts": "^4.0.0",
