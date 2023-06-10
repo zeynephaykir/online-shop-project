@@ -30,8 +30,7 @@ import AdminRoute from './components/AdminRoute';
 import DashboardScreen from './screens/DashboardScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
-
-
+import WishlistScreen from './screens/WishlistScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -96,6 +95,9 @@ function App() {
                     <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
                       <LinkContainer to="/profile">
                         <NavDropdown.Item>User Profile</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/wishlist">
+                        <NavDropdown.Item>Wishlist</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to="/orderhistory">
                         <NavDropdown.Item>Order History</NavDropdown.Item>
@@ -183,6 +185,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ProfileScreen/>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/wishlist"
+                element={
+                  <ProtectedRoute>
+                    <WishlistScreen />
                   </ProtectedRoute>
                 }
               />
