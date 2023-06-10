@@ -65,6 +65,9 @@ function ProductScreen() {
     });
     navigate('/cart');
   };
+  
+  const discountedPrice = product.price - product.price * (product.discount / 100);
+
   return loading ? (
     <LoadingBox />
   ) : error ? (
@@ -93,7 +96,16 @@ function ProductScreen() {
                 numReviews={product.numReviews}
               ></Rating>
             </ListGroup.Item>
-            <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
+            <ListGroup.Item>
+              Price : 
+              ${discountedPrice.toFixed(2)} 
+              {product.discount > 0 && (
+                <>
+                  <del className="ml-2">${product.price}</del>
+                  <span className="ml-2 badge badge-danger">{product.discount}% OFF</span>
+                </>
+              )}
+            </ListGroup.Item>
             <ListGroup.Item>
               Description:
               <p>{product.description}</p>
@@ -107,7 +119,15 @@ function ProductScreen() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>${product.price}</Col>
+                    <Col>
+                      ${discountedPrice.toFixed(2)} 
+                      {product.discount > 0 && (
+                        <>
+                          <del className="ml-2">${product.price}</del>
+                          <span className="ml-2 badge badge-danger">{product.discount}% OFF</span>
+                        </>
+                      )}
+                    </Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>

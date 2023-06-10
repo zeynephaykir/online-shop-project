@@ -36,6 +36,10 @@ export default function CartScreen() {
     navigate('/signin?redirect=/shipping');
   };
 
+  const getDiscountedPrice = (price, discount) => {
+    return price - price * (discount / 100);
+  };
+
   return (
     <div>
       <Helmet>
@@ -82,7 +86,15 @@ export default function CartScreen() {
                         <i className="fas fa-plus-circle"></i>
                       </Button>
                     </Col>
-                    <Col md={3}>${item.price}</Col>
+                    <Col md={3}>
+                      ${getDiscountedPrice(item.price, item.discount).toFixed(2)}
+                      {item.discount > 0 && (
+                        <>
+                          <del className="ml-2">${item.price}</del>
+                          <span className="ml-2 badge badge-danger">{item.discount}% OFF</span>
+                        </>
+                      )}
+                    </Col>
                     <Col md={2}>
                       <Button
                         onClick={() => removeItemHandler(item)}
@@ -105,7 +117,7 @@ export default function CartScreen() {
                   <h3>
                     Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '}
                     items) : $
-                    {cartItems.reduce((a, c) => a + c.price * c.quantity, 0)}
+                    {cartItems.reduce((a, c) => a + getDiscountedPrice(c.price, c.discount) * c.quantity, 0).toFixed(2)}
                   </h3>
                 </ListGroup.Item>
                 <ListGroup.Item>
