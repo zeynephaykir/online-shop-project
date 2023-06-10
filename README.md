@@ -1,40 +1,10 @@
+### In Main Project folder, open terminal and run:
 npm install
-
-npm start 
-
-####These two should suffice
-
----
-npm install prettier
-
-####Install Postman
-
-####Configure MongoDB, add your IP Address to Whitelist
-
-npm install nodemon
-
-npm install express
-
-###To parse environment variables
-npm install dotenv 
-
-###Middleware to parse json objects
-npm install body-parser
-
-###API logging library
-npm install morgan
-
-###MongoDB operations
-npm install mongoose
-
-npm install cors
-
-###Password hashing
-npm install bcryptjs
-
-npm i jsonwebtoken
-
-npm i express-jwt
-
-###For image upload
-npm i multer
+### Then, type 'cd backend' in terminal and run:
+npm install
+### Open another terminal, 'cd frontend' and run:
+npm install --force
+### First on backend folder, run in terminal:
+npm start
+### At the same time on frontend folder, run in terminal:
+npm start
