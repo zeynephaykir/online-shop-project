@@ -29,6 +29,7 @@ const reducer = (state, action) => {
       return state;
   }
 };
+
 export default function ProductEditScreen() {
   const navigate = useNavigate();
   const params = useParams(); // /product/:id
@@ -49,6 +50,7 @@ export default function ProductEditScreen() {
   const [countInStock, setCountInStock] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
+  const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +65,7 @@ export default function ProductEditScreen() {
         setCountInStock(data.countInStock);
         setBrand(data.brand);
         setDescription(data.description);
+        setDiscount(data.discount || 0); // Assume no discount if it's not set
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
         dispatch({
@@ -90,6 +93,7 @@ export default function ProductEditScreen() {
           brand,
           countInStock,
           description,
+          discount,
         },
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -109,7 +113,7 @@ export default function ProductEditScreen() {
   return (
     <Container className="small-container">
       <Helmet>
-        <title>Edit Product ${productId}</title>
+        <title>Edit Product {productId}</title>
       </Helmet>
       <h1>Edit Product {productId}</h1>
 
@@ -135,7 +139,7 @@ export default function ProductEditScreen() {
               required
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="name">
+          <Form.Group className="mb-3" controlId="price">
             <Form.Label>Price</Form.Label>
             <Form.Control
               value={price}
@@ -183,8 +187,19 @@ export default function ProductEditScreen() {
               required
             />
           </Form.Group>
+          <Form.Group className="mb-3" controlId="discount">
+            <Form.Label>Discount (in %)</Form.Label>
+            <Form.Control
+              type="number"
+              min="0"
+              max="100"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              required
+            />
+          </Form.Group>
           <div className="mb-3">
-          <Button disabled={loadingUpdate} type="submit">
+            <Button disabled={loadingUpdate} type="submit">
               Update
             </Button>
             {loadingUpdate && <LoadingBox></LoadingBox>}

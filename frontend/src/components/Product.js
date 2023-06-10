@@ -1,3 +1,4 @@
+import React from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
@@ -28,6 +29,8 @@ function Product(props) {
     });
   };
 
+  const discountedPrice = product.price - (product.price * product.discount / 100);
+
   return (
     <Card>
       <Link to={`/product/${product.slug}`}>
@@ -38,7 +41,15 @@ function Product(props) {
           <Card.Title>{product.name}</Card.Title>
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
-        <Card.Text>${product.price}</Card.Text>
+        <Card.Text>
+          ${discountedPrice.toFixed(2)} 
+          {product.discount > 0 && (
+            <React.Fragment>
+              <del className="ml-2">${product.price}</del>
+              <span className="ml-2 badge badge-danger">{product.discount}% OFF</span>
+            </React.Fragment>
+          )}
+        </Card.Text>
         {product.countInStock === 0 ? (
           <Button variant="light" disabled>
             Out of stock
