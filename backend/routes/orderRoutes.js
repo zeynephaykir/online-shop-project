@@ -183,4 +183,43 @@ orderRouter.put(
     })
   );
 
+
+
+  orderRouter.put(
+    '/:id/complete',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+      const order = await Order.findById(req.params.id).populate('user', 'email name');
+      if (order) {
+        order.isDelivered = true;
+        order.deliveryStatus = 'Delivered'; // Update delivery status
+        await order.save();
+  
+        // Send email notification to the user
+        mailgun()
+          .messages()
+          .send(
+            {
+              from: 'Mailgun Sandbox <postmaster@sandbox58aba97c80c34fabb117ca2643deea62.mailgun.org>',
+              to: `${order.user.name} <${order.user.email}>`,
+              subject: `Order Delivered: ${order._id}`,
+              html: payOrderEmailTemplate(order),
+            },
+            (error, body) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log(body);
+              }
+            }
+          );
+  
+        res.send({ message: 'Order Delivered', order });
+      } else {
+        res.status(404).send({ message: 'Order Not Found' });
+      }
+    })
+  );
+  
+
 export default orderRouter;
