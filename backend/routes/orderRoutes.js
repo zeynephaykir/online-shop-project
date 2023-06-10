@@ -4,6 +4,10 @@ import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
 import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 const orderRouter = express.Router();
 
@@ -112,6 +116,28 @@ orderRouter.put(
             order.deliveredAt = Date.now();
             await order.save();
             res.send({ message: 'Order Delivered' });
+            //javascript
+            const sgMail = require('@sendgrid/mail')
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+            const msg = {
+              to: 'zeynephhaykir@gmail.com', // Change to your recipient
+              from: 'crochetbysarin@gmail.com', // Change to your verified sender
+              subject: 'New order ${order._id}',
+              text: 'Thanks for shopping with us!',
+              html: payOrderEmailTemplate(order),
+            }
+            sgMail
+              .send(msg)
+              .then(() => {
+                console.log('Email sent')
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+        } else {
+            res.status(404).send({ message: 'Order Not Found' });
+        }
+          /*
             mailgun()
                 .messages()
                 .send(
@@ -129,13 +155,11 @@ orderRouter.put(
                         }
                     }
                 );
-        } else {
-            res.status(404).send({ message: 'Order Not Found' });
-        }
+          */
     })
 );
 
-  orderRouter.put(
+orderRouter.put(
     '/:id/pay',
     isAuth,
     expressAsyncHandler(async (req, res) => {
@@ -154,6 +178,25 @@ orderRouter.put(
         };
   
         const updatedOrder = await order.save();
+        javascript
+            const sgMail = require('@sendgrid/mail')
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+            const msg = {
+              to: 'zeynephhaykir@gmail.com', // Change to your recipient
+              from: 'crochetbysarin@gmail.com', // Change to your verified sender
+              subject: 'New order ${order._id}',
+              text: 'Thanks for shopping with us!',
+              html: payOrderEmailTemplate(order),
+            }
+            sgMail
+              .send(msg)
+              .then(() => {
+                console.log('Order paid')
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+            /*
         mailgun()
         .messages()
         .send(
@@ -172,6 +215,8 @@ orderRouter.put(
           }
         );
         res.send({ message: 'Order Paid', order: updatedOrder });
+        */
+
       } else {
         res.status(404).send({ message: 'Order Not Found' });
       }
