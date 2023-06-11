@@ -13,6 +13,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { getError } from '../utils';
 import { Store } from '../Store';
+import { FaRegHeart, FaShoppingCart } from 'react-icons/fa';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -22,6 +23,10 @@ const reducer = (state, action) => {
       return { ...state, product: action.payload, loading: false };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
+    case 'ADD_TO_WISHLIST':
+      return { ...state, isAddedToWishlist: true };
+    case 'ADD_TO_CART':
+      return { ...state, isAddedToCart: true };
     default:
       return state;
   }
@@ -32,11 +37,14 @@ function ProductScreen() {
   const params = useParams();
   const { slug } = params;
 
-  const [{ loading, error, product }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, product, isAddedToWishlist, isAddedToCart }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
     error: '',
+    isAddedToWishlist: false,
+    isAddedToCart: false,
   });
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
@@ -49,23 +57,44 @@ function ProductScreen() {
     };
     fetchData();
   }, [slug]);
+
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { cart } = state;
-  const addToCartHandler = async () => {
-    const existItem = cart.cartItems.find((x) => x._id === product._id);
-    const quantity = existItem ? existItem.quantity + 1 : 1;
-    const { data } = await axios.get(`/api/products/${product._id}`);
-    if (data.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
-      return;
+  const { wishlist, cart } = state;
+
+  const addToWishlistHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      const { data } = await axios.post(`/api/wishlist`, { productId: product._id }, config);
+      console.log(data);
+      ctxDispatch({ type: 'ADD_TO_WISHLIST', payload: product });
+      navigate('/wishlist');
+    } catch (error) {
+      console.log(error);
     }
-    ctxDispatch({
-      type: 'CART_ADD_ITEM',
-      payload: { ...product, quantity },
-    });
-    navigate('/cart');
+  };
+
+  const addToCartHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state?.userInfo?.token}`,
+        },
+      };
+      const { data } = await axios.post(`/api/cart`, { productId: product._id }, config);
+      console.log(data);
+      ctxDispatch({ type: 'ADD_TO_CART', payload: product });
+      navigate('/cart');
+    } catch (error) {
+      console.log(error);
+    }
   };
   
+  
+
   const discountedPrice = product.price - product.price * (product.discount / 100);
 
   return loading ? (
@@ -73,91 +102,59 @@ function ProductScreen() {
   ) : error ? (
     <MessageBox variant="danger">{error}</MessageBox>
   ) : (
-    <div>
+    <>
+      <Helmet>
+        <title>{product.name}</title>
+      </Helmet>
       <Row>
         <Col md={6}>
-          <img
-            className="img-large"
-            src={product.image}
-            alt={product.name}
-          ></img>
+          <Card className="mb-3">
+            <Card.Img variant="top" src={product.image} />
+          </Card>
         </Col>
-        <Col md={3}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <Helmet>
-                <title>{product.name}</title>
-              </Helmet>
-              <h1>{product.name}</h1>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
-              ></Rating>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              Price : 
-              ${discountedPrice.toFixed(2)} 
-              {product.discount > 0 && (
-                <>
-                  <del className="ml-2">${product.price}</del>
-                  <span className="ml-2 badge badge-danger">{product.discount}% OFF</span>
-                </>
-              )}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              Description:
-              <p>{product.description}</p>
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={3}>
-          <Card>
+        <Col md={6}>
+          <Card className="mb-3">
             <Card.Body>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Price:</Col>
-                    <Col>
-                      ${discountedPrice.toFixed(2)} 
-                      {product.discount > 0 && (
-                        <>
-                          <del className="ml-2">${product.price}</del>
-                          <span className="ml-2 badge badge-danger">{product.discount}% OFF</span>
-                        </>
-                      )}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Status:</Col>
-                    <Col>
-                      {console.log(product)}
-                      {product.countInStock > 0 ? (
-                        <Badge bg="success">In Stock</Badge>
-                      ) : (
-                        <Badge bg="danger">Unavailable</Badge>
-                      )}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                {product.countInStock > 0 && (
-                  <ListGroup.Item>
-                    <div className="d-grid">
-                      <Button onClick={addToCartHandler} variant="primary">
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </ListGroup.Item>
+              <Card.Title>{product.name}</Card.Title>
+              <Card.Text>
+                <Rating rating={product.rating} numReviews={product.numReviews} />
+                <Badge pill bg="primary" className="ms-2">
+                  #{product.rank}
+                </Badge>
+              </Card.Text>
+              <Card.Text as="h4">
+                {product.discount > 0 ? (
+                  <>
+                    <del>${product.price.toFixed(2)}</del>
+                    <span className="ms-2">${discountedPrice.toFixed(2)}</span>
+                  </>
+                ) : (
+                  <>${product.price.toFixed(2)}</>
                 )}
-              </ListGroup>
+              </Card.Text>
+              <Card.Text>{product.description}</Card.Text>
             </Card.Body>
+            <ListGroup variant="flush">
+              <ListGroup.Item>
+                <div className="d-grid">
+                  <Button onClick={addToWishlistHandler} variant="outline-primary" disabled={isAddedToWishlist}>
+                    <FaRegHeart size={20} /> {isAddedToWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}
+                  </Button>
+                </div>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <div className="d-grid">
+                  <Button onClick={addToCartHandler} variant="outline-primary" disabled={isAddedToCart}>
+                    <FaShoppingCart size={20} /> {isAddedToCart ? 'Added to Cart' : 'Add to Cart'}
+                  </Button>
+                </div>
+              </ListGroup.Item>
+            </ListGroup>
           </Card>
         </Col>
       </Row>
-    </div>
+    </>
   );
 }
+
 export default ProductScreen;
