@@ -14,7 +14,7 @@ function Product(props) {
   // Use the product discount value
   const discountedPrice = product.price - (product.price * product.discount / 100);
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state, dispatch} = useContext(Store);
   const {
     cart: { cartItems },
     wishlist: { wishlistItems },
@@ -36,7 +36,7 @@ function Product(props) {
       window.alert('Sorry. Product is out of stock');
       return;
     }
-    ctxDispatch({
+    dispatch({
       type: 'CART_ADD_ITEM',
       payload: { ...item, quantity },
     });
