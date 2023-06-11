@@ -92,8 +92,20 @@ function ProductScreen() {
       console.log(error);
     }
   };
-  
-  
+
+  const removeFromWishlistHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      await axios.delete(`/api/wishlist/${product._id}`, config);
+      ctxDispatch({ type: 'REMOVE_FROM_WISHLIST', payload: product._id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const discountedPrice = product.price - product.price * (product.discount / 100);
 

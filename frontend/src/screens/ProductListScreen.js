@@ -13,7 +13,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { getError } from '../utils';
 import { Store } from '../Store';
-import { FaRegHeart, FaCartPlus } from 'react-icons/fa';
+import { FaRegHeart, FaHeartBroken, FaCartPlus } from 'react-icons/fa';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -25,6 +25,8 @@ const reducer = (state, action) => {
       return { ...state, loading: false, error: action.payload };
     case 'ADD_TO_WISHLIST':
       return { ...state, isAddedToWishlist: true };
+    case 'REMOVE_FROM_WISHLIST':
+      return { ...state, isAddedToWishlist: false };
     default:
       return state;
   }
@@ -56,23 +58,53 @@ function ProductListScreen() {
   }, [slug]);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { cart } = state;
+  const { wishlist } = state;
+
+  const addToWishlistHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      const { data } = await axios.post(`/api/wishlist`, { productId: product._id }, config);
+      console.log(data);
+      ctxDispatch({ type: 'ADD_TO_WISHLIST', payload: product });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeFromWishlistHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      const { data } = await axios.delete(`/api/wishlist/${product._id}`, config);
+      console.log(data);
+      ctxDispatch({ type: 'REMOVE_FROM_WISHLIST' });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const addToCartHandler = async () => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${state?.userInfo?.token}`,
+          Authorization: `Bearer ${state.userInfo.token}`,
         },
       };
       const { data } = await axios.post(`/api/cart`, { productId: product._id }, config);
       console.log(data);
-      ctxDispatch({ type: 'ADD_TO_CART', payload: product._id });
+      ctxDispatch({ type: 'ADD_TO_CART', payload: product });
       navigate('/cart');
     } catch (error) {
       console.log(error);
     }
   };
-  
 
   const discountedPrice = product.price - product.price * (product.discount / 100);
 
@@ -99,19 +131,15 @@ function ProductListScreen() {
             </ListGroup.Item>
             <ListGroup.Item>
               Price : ${discountedPrice.toFixed(2)}{' '}
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={isAddedToWishlist}
-                onClick={addToCartHandler}
-              >
-                {isAddedToWishlist ? (
-                  <FaRegHeart className="mr-1" />
-                ) : (
-                  <FaCartPlus className="mr-1" />
-                )}
-                {isAddedToWishlist ? 'Added to Wishlist' : 'Add to Cart'}
-              </button>
+              {isAddedToWishlist ? (
+                <Button variant="outline-danger" onClick={removeFromWishlistHandler}>
+                  <FaHeartBroken className="mr-1" /> Remove from Wishlist
+                </Button>
+              ) : (
+                <Button variant="outline-primary" onClick={addToWishlistHandler}>
+                  <FaRegHeart className="mr-1" /> Add to Wishlist
+                </Button>
+              )}
             </ListGroup.Item>
           </ListGroup>
         </Col>
@@ -154,9 +182,9 @@ function ProductListScreen() {
                   type="button"
                   className="btn-block"
                   disabled={product.countInStock === 0}
-                  onClick={() => navigate(`/cart/${product._id}`)}
+                  onClick={addToCartHandler}
                 >
-                  Add to Cart
+                  <FaCartPlus className="mr-1" /> Add to Cart
                 </Button>
               </ListGroup.Item>
             </ListGroup>

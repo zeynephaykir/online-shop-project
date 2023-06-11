@@ -30,6 +30,17 @@ const WishlistScreen = () => {
     fetchWishlistItems();
   }, [userInfo.token]);
 
+  const removeFromWishlistHandler = async (itemId) => {
+    try {
+      await axios.delete(`/api/wishlist/${itemId}`, {
+        headers: { Authorization: `Bearer ${userInfo.token}` },
+      });
+      setWishlist(wishlist.filter(item => item._id !== itemId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -37,25 +48,40 @@ const WishlistScreen = () => {
   return (
     <div>
       <h1>Your Wishlist</h1>
-      <Row xs={1} md={5} className="g-4">
-        {wishlist.map((item) => {
-          const discountedPrice = item.price - item.price * (item.discount / 100);
-          return (
-            <Col key={item._id}>
-              <Card>
-                <Card.Img variant="top" src={item.image} />
-                <Card.Body>
-                  <Card.Title>{item.name}</Card.Title>
-                  <Card.Text>${discountedPrice.toFixed(2)} {item.discount > 0 && <><del className="ml-2">${item.price}</del><span className="ml-2 badge badge-danger">{item.discount}% OFF</span></>}</Card.Text>
-                  <Button variant="primary" onClick={() => navigate(`/product/${item.slug}`)}>
-                    View
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          );
-        })}
-      </Row>
+      {wishlist.length > 0 ? (
+        <Row xs={1} md={5} className="g-4">
+          {wishlist.map((item) => {
+            const discountedPrice = item.price - item.price * (item.discount / 100);
+            return (
+              <Col key={item._id}>
+                <Card>
+                  <Card.Img variant="top" src={item.image} />
+                  <Card.Body>
+                    <Card.Title>{item.name}</Card.Title>
+                    <Card.Text>
+                      ${discountedPrice.toFixed(2)}{' '}
+                      {item.discount > 0 && (
+                        <>
+                          <del className="ml-2">${item.price}</del>
+                          <span className="ml-2 badge badge-danger">{item.discount}% OFF</span>
+                        </>
+                      )}
+                    </Card.Text>
+                    <Button variant="primary" onClick={() => navigate(`/product/${item.slug}`)}>
+                      View
+                    </Button>
+                    <Button variant="danger" className="ms-2" onClick={() => removeFromWishlistHandler(item._id)}>
+                      Delete
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      ) : (
+        <div>Your wishlist is empty.</div>
+      )}
     </div>
   );
 };
