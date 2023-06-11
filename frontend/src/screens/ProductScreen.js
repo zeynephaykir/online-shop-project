@@ -1,38 +1,42 @@
-import axios from 'axios';
-import { useContext, useEffect, useReducer, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
-import Rating from '../components/Rating';
-import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import { getError } from '../utils';
-import { Store } from '../Store';
-import Form from 'react-bootstrap/Form';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
+import Rating from "../components/Rating";
+import { Helmet } from "react-helmet-async";
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
+import { getError } from "../utils";
+import { Store } from "../Store";
+import Form from "react-bootstrap/Form";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import { toast } from "react-toastify";
+import { FaHeart } from 'react-icons/fa';
+
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'REFRESH_PRODUCT':
+    case "REFRESH_PRODUCT":
       return { ...state, product: action.payload };
-    case 'CREATE_REQUEST':
+    case "CREATE_REQUEST":
       return { ...state, loadingCreateReview: true };
-    case 'CREATE_SUCCESS':
+    case "CREATE_SUCCESS":
       return { ...state, loadingCreateReview: false };
-    case 'CREATE_FAIL':
+    case "CREATE_FAIL":
       return { ...state, loadingCreateReview: false };
-    case 'FETCH_REQUEST':
+    case "FETCH_REQUEST":
       return { ...state, loading: true };
-    case 'FETCH_SUCCESS':
+    case "FETCH_SUCCESS":
       return { ...state, product: action.payload, loading: false };
-    case 'FETCH_FAIL':
+    case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
+    case "ADD_TO_WISHLIST":
+      return { ...state, isAddedToWishlist: true };
     default:
       return state;
   }
@@ -42,50 +46,67 @@ function ProductScreen() {
   let reviewsRef = useRef();
 
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
 
-  const [{ loading, error, product, loadingCreateReview }, dispatch] =
+  const [{ loading, error, product, loadingCreateReview, isAddedToWishlist }, dispatch] =
     useReducer(reducer, {
       product: [],
       loading: true,
-      error: '',
+      error: "",
+      isAddedToWishlist: false,
     });
   useEffect(() => {
     const fetchData = async () => {
-      dispatch({ type: 'FETCH_REQUEST' });
+      dispatch({ type: "FETCH_REQUEST" });
       try {
         const result = await axios.get(`/api/products/slug/${slug}`);
-        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        dispatch({ type: "FETCH_SUCCESS", payload: result.data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
       }
     };
     fetchData();
   }, [slug]);
   const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { wishlist} = state;
   const { cart, userInfo } = state;
+  const addToWishlistHandler = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      const { data } = await axios.post(`/api/wishlist`, { productId: product._id }, config);
+      console.log(data);
+      ctxDispatch({ type: 'ADD_TO_WISHLIST', payload: product });
+      navigate('/wishlist');
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const addToCartHandler = async () => {
     const existItem = cart.cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     const { data } = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
+      window.alert("Sorry. Product is out of stock");
       return;
     }
     ctxDispatch({
-      type: 'CART_ADD_ITEM',
+      type: "CART_ADD_ITEM",
       payload: { ...product, quantity },
     });
-    navigate('/cart');
+    navigate("/cart");
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!comment || !rating) {
-      toast.error('Please enter comment and rating');
+      toast.error("Please enter comment and rating");
       return;
     }
     try {
@@ -98,20 +119,20 @@ function ProductScreen() {
       );
 
       dispatch({
-        type: 'CREATE_SUCCESS',
+        type: "CREATE_SUCCESS",
       });
-      toast.success('Review submitted successfully');
+      toast.success("Review submitted successfully");
       product.reviews.unshift(data.review);
       product.numReviews = data.numReviews;
       product.rating = data.rating;
-      dispatch({ type: 'REFRESH_PRODUCT', payload: product });
+      dispatch({ type: "REFRESH_PRODUCT", payload: product });
       window.scrollTo({
-        behavior: 'smooth',
+        behavior: "smooth",
         top: reviewsRef.current.offsetTop,
       });
     } catch (error) {
       toast.error(getError(error));
-      dispatch({ type: 'CREATE_FAIL' });
+      dispatch({ type: "CREATE_FAIL" });
     }
   };
 
@@ -179,6 +200,11 @@ function ProductScreen() {
                       <Button onClick={addToCartHandler} variant="primary">
                         Add to Cart
                       </Button>
+                      <Button onClick={addToWishlistHandler} variant="light" className="mt-2" disabled={isAddedToWishlist} >
+                        <FaHeart
+                          style={{ color: "red", marginRight: "0.5rem" }}
+                        /> {isAddedToWishlist ? 'Added to Wishlist' : 'Add To Wishlist'}
+                      </Button>
                     </div>
                   </ListGroup.Item>
                 )}
@@ -245,10 +271,10 @@ function ProductScreen() {
             </form>
           ) : (
             <MessageBox>
-              Please{' '}
+              Please{" "}
               <Link to={`/signin?redirect=/product/${product.slug}`}>
                 Sign In
-              </Link>{' '}
+              </Link>{" "}
               to write a review
             </MessageBox>
           )}
