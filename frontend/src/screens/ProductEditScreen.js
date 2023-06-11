@@ -46,6 +46,8 @@ export default function ProductEditScreen() {
 
   const { state } = useContext(Store);
   const { userInfo } = state;
+  const isSalesManager = userInfo.role && userInfo.role === 'sales manager';
+  const isProductManager = userInfo.role && userInfo.role === 'product manager';
   const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] =
     useReducer(reducer, {
       loading: true,
@@ -155,7 +157,7 @@ export default function ProductEditScreen() {
             <Form.Label>Name</Form.Label>
             <Form.Control
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              disabled
               required
             />
           </Form.Group>
@@ -163,28 +165,36 @@ export default function ProductEditScreen() {
             <Form.Label>Slug</Form.Label>
             <Form.Control
               value={slug}
-              onChange={(e) => setSlug(e.target.value)}
+              disabled
               required
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="name">
             <Form.Label>Price</Form.Label>
-            <Form.Control
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
+            {isSalesManager ? (
+                <Form.Control
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                />
+            ) : (
+                <Form.Control
+                    value={price}
+                    disabled
+                    required
+                />
+            )}
           </Form.Group>
           <Form.Group className="mb-3" controlId="imageFile">
             <Form.Label>Upload File</Form.Label>
-            <Form.Control type="file" onChange={uploadFileHandler} />
+            <Form.Control type="file" disabled  />
             {loadingUpload && <LoadingBox></LoadingBox>}
           </Form.Group>
           <Form.Group className="mb-3" controlId="image">
             <Form.Label>Image File</Form.Label>
             <Form.Control
               value={image}
-              onChange={(e) => setImage(e.target.value)}
+              disabled
               required
             />
           </Form.Group>
@@ -192,7 +202,7 @@ export default function ProductEditScreen() {
             <Form.Label>Category</Form.Label>
             <Form.Control
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              disabled
               required
             />
           </Form.Group>
@@ -200,23 +210,31 @@ export default function ProductEditScreen() {
             <Form.Label>Brand</Form.Label>
             <Form.Control
               value={brand}
-              onChange={(e) => setBrand(e.target.value)}
+              disabled
               required
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="countInStock">
             <Form.Label>Count In Stock</Form.Label>
-            <Form.Control
-              value={countInStock}
-              onChange={(e) => setCountInStock(e.target.value)}
-              required
-            />
+            {isProductManager ? (
+                <Form.Control
+                    value={countInStock}
+                    onChange={(e) => setCountInStock(e.target.value)}
+                    required
+                />
+            ) : (
+                <Form.Control
+                    value={countInStock}
+                    disabled
+                    required
+                />
+            )}
           </Form.Group>
           <Form.Group className="mb-3" controlId="description">
             <Form.Label>Description</Form.Label>
             <Form.Control
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              disabled
               required
             />
           </Form.Group>

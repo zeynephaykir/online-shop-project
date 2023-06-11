@@ -117,20 +117,20 @@ function App() {
                       Sign In
                     </Link>
                   )}
-                  {userInfo && userInfo.isAdmin && (
+                  {userInfo && (userInfo.isAdmin) && (
                     <NavDropdown title="Admin" id="admin-nav-dropdown">
-                      <LinkContainer to="/admin/dashboard">
-                        <NavDropdown.Item>Dashboard</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/products">
-                        <NavDropdown.Item>Products</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/orders">
-                        <NavDropdown.Item>Orders</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/users">
-                        <NavDropdown.Item>Users</NavDropdown.Item>
-                      </LinkContainer>
+                        {(userInfo.role && userInfo.role === "sales manager") && (<LinkContainer to="/admin/dashboard">
+                            <NavDropdown.Item>Dashboard</NavDropdown.Item>
+                        </LinkContainer>)}
+                        <LinkContainer to="/admin/products">
+                            <NavDropdown.Item>Products</NavDropdown.Item>
+                        </LinkContainer>
+                        {(userInfo.role && userInfo.role === "product manager") && (<LinkContainer to="/admin/orders">
+                            <NavDropdown.Item>Orders</NavDropdown.Item>
+                        </LinkContainer>)}
+                        <LinkContainer to="/admin/users">
+                            <NavDropdown.Item>Users</NavDropdown.Item>
+                        </LinkContainer>
                     </NavDropdown>
                   )}
                 </Nav>

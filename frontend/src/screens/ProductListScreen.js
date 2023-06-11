@@ -140,13 +140,13 @@ export default function ProductListScreen() {
         <Col>
           <h1>Products</h1>
         </Col>
-        <Col className="col text-end">
+        {(userInfo.role && userInfo.role === "product manager") && (<Col className="col text-end">
           <div>
             <Button type="button" onClick={createHandler}>
               Create Product
             </Button>
           </div>
-        </Col>
+        </Col>)}
       </Row>
 
       {loadingCreate && <LoadingBox></LoadingBox>}
