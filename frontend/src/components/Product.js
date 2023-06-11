@@ -5,6 +5,8 @@ import Rating from './Rating';
 import axios from 'axios';
 import { useContext } from 'react';
 import { Store } from '../Store';
+import { useEffect, useState } from 'react';
+import { FaHeart } from 'react-icons/fa';
 
 function Product(props) {
   const { product } = props;
@@ -15,7 +17,16 @@ function Product(props) {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
     cart: { cartItems },
+    wishlist: { wishlistItems },
   } = state;
+
+  // const wishlistItems = wishlist?.wishlistItems || [];
+  const [isInWishlist, setIsInWishlist] = useState(wishlistItems.some((item) => item._id === product._id));
+
+  useEffect(() => {
+    setIsInWishlist(wishlistItems.some((item) => item._id === product._id));
+  }, [wishlistItems, product._id]);
+
 
   const addToCartHandler = async (item) => {
     const existItem = cartItems.find((x) => x._id === product._id);
@@ -30,6 +41,38 @@ function Product(props) {
       payload: { ...item, quantity },
     });
   };
+
+  const addToWishlistHandler = async (productId) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      const { data } = await axios.post(`/api/wishlist`, { productId }, config);
+      await dispatch({ type: 'ADD_TO_WISHLIST', payload: data });
+      setIsInWishlist(true);
+      console.log('Product added to wishlist');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeProductFromWishlist = async (productId) => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${state.userInfo.token}`,
+        },
+      };
+      await axios.delete(`/api/wishlist/${productId}`, config);
+      await dispatch({ type: 'REMOVE_FROM_WISHLIST', payload: productId });
+      setIsInWishlist(false);
+      console.log('Product removed from wishlist');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
       <Card>
@@ -59,7 +102,20 @@ function Product(props) {
               <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
           )}
         </Card.Body>
+        <Card.Footer>
+          <div className="d-flex justify-content-between">
+            {isInWishlist ? (
+                <Button variant="link" onClick={() => removeProductFromWishlist(product._id)}>
+                  <FaHeart />
+                </Button>
+            ) : (
+                <Button variant="link" onClick={() => addToWishlistHandler(product._id)}>
+                  <FaHeart />
+                </Button>
+            )}
+          </div>
+        </Card.Footer>
       </Card>
   );
 }
-export default Product;
+export default Product;

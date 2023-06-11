@@ -46,6 +46,13 @@ const reducer = (state, action) => {
   
     case 'DELETE_RESET':
       return { ...state, loadingDelete: false, successDelete: false };
+
+      case 'ADD_TO_WISHLIST':
+        return { ...state, isAddedToWishlist: true };
+
+      case 'REMOVE_FROM_WISHLIST':
+        return { ...state, isAddedToWishlist: false };
+
     default:
       return state;
   }
