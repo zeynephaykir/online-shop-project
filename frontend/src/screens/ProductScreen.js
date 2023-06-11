@@ -48,11 +48,11 @@ function ProductScreen() {
   const { slug } = params;
 
   const [{ loading, error, product, loadingCreateReview }, dispatch] =
-    useReducer(reducer, {
-      product: [],
-      loading: true,
-      error: '',
-    });
+      useReducer(reducer, {
+        product: [],
+        loading: true,
+        error: '',
+      });
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
@@ -90,171 +90,163 @@ function ProductScreen() {
     }
     try {
       const { data } = await axios.post(
-        `/api/products/${product._id}/reviews`,
-        { rating, comment, name: userInfo.name },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
+          `/api/products/${product._id}/reviews`,
+          { rating, comment, name: userInfo.name },
+          {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          }
       );
-
-      dispatch({
-        type: 'CREATE_SUCCESS',
-      });
-      toast.success('Review submitted successfully');
-      product.reviews.unshift(data.review);
-      product.numReviews = data.numReviews;
-      product.rating = data.rating;
-      dispatch({ type: 'REFRESH_PRODUCT', payload: product });
-      window.scrollTo({
-        behavior: 'smooth',
-        top: reviewsRef.current.offsetTop,
-      });
-    } catch (error) {
-      toast.error(getError(error));
+      toast.success(data.message);
+      dispatch({ type: 'CREATE_SUCCESS' });
+      setRating(0);
+      setComment('');
+    } catch (err) {
+      toast.error(getError(err));
       dispatch({ type: 'CREATE_FAIL' });
     }
   };
 
-  return loading ? (
-    <LoadingBox />
-  ) : error ? (
-    <MessageBox variant="danger">{error}</MessageBox>
-  ) : (
-    <div>
-      <Row>
-        <Col md={6}>
-          <img
-            className="img-large"
-            src={product.image}
-            alt={product.name}
-          ></img>
-        </Col>
-        <Col md={3}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <Helmet>
-                <title>{product.name}</title>
-              </Helmet>
-              <h1>{product.name}</h1>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
-              ></Rating>
-            </ListGroup.Item>
-            <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
-            <ListGroup.Item>
-              Description:
-              <p>{product.description}</p>
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={3}>
-          <Card>
-            <Card.Body>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Price:</Col>
-                    <Col>${product.price}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Status:</Col>
-                    <Col>
-                      {console.log(product)}
-                      {product.countInStock > 0 ? (
-                        <Badge bg="success">In Stock</Badge>
-                      ) : (
-                        <Badge bg="danger">Unavailable</Badge>
-                      )}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                {product.countInStock > 0 && (
-                  <ListGroup.Item>
-                    <div className="d-grid">
-                      <Button onClick={addToCartHandler} variant="primary">
-                        Add to Cart
-                      </Button>
-                    </div>
-                  </ListGroup.Item>
-                )}
-              </ListGroup>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <div className="my-3">
-        <h2 ref={reviewsRef}>Reviews</h2>
-        <div className="mb-3">
-          {product.reviews.length === 0 && (
-            <MessageBox>There is no review</MessageBox>
-          )}
-        </div>
-        <ListGroup>
-          {product.reviews.map((review) => (
-            <ListGroup.Item key={review._id}>
-              <strong>{review.name}</strong>
-              <Rating rating={review.rating} caption=" "></Rating>
-              <p>{review.createdAt.substring(0, 10)}</p>
-              <p>{review.comment}</p>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-        <div className="my-3">
-          {userInfo ? (
-            <form onSubmit={submitHandler}>
-              <h2>Write a customer review</h2>
-              <Form.Group className="mb-3" controlId="rating">
-                <Form.Label>Rating</Form.Label>
-                <Form.Select
-                  aria-label="Rating"
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                >
-                  <option value="">Select...</option>
-                  <option value="1">1- Poor</option>
-                  <option value="2">2- Fair</option>
-                  <option value="3">3- Good</option>
-                  <option value="4">4- Very good</option>
-                  <option value="5">5- Excelent</option>
-                </Form.Select>
-              </Form.Group>
-              <FloatingLabel
-                controlId="floatingTextarea"
-                label="Comments"
-                className="mb-3"
-              >
-                <Form.Control
-                  as="textarea"
-                  placeholder="Leave a comment here"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                />
-              </FloatingLabel>
+  const discountedPrice = product.price - (product.price * product.discount / 100);
 
-              <div className="mb-3">
-                <Button disabled={loadingCreateReview} type="submit">
-                  Submit
-                </Button>
-                {loadingCreateReview && <LoadingBox></LoadingBox>}
-              </div>
-            </form>
-          ) : (
-            <MessageBox>
-              Please{' '}
-              <Link to={`/signin?redirect=/product/${product.slug}`}>
-                Sign In
-              </Link>{' '}
-              to write a review
-            </MessageBox>
-          )}
-        </div>
+  return (
+      <div>
+        {loading ? (
+            <LoadingBox></LoadingBox>
+        ) : error ? (
+            <MessageBox variant="danger">{error}</MessageBox>
+        ) : (
+            <div>
+              <Link to="/">Back to result</Link>
+              <Row>
+                <Col md={6}>
+                  <img
+                      className="img-large"
+                      src={product.image}
+                      alt={product.name}
+                  ></img>
+                </Col>
+                <Col md={3}>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <Helmet>
+                        <title>{product.name}</title>
+                      </Helmet>
+                      <h1>{product.name}</h1>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <Rating
+                          rating={product.rating}
+                          numReviews={product.numReviews}
+                      ></Rating>
+                    </ListGroup.Item>
+                    <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
+                    <ListGroup.Item>Discount : {product.discount}%</ListGroup.Item>
+                    <ListGroup.Item>Discounted Price : ${discountedPrice}</ListGroup.Item>
+                    <ListGroup.Item>
+                      Description:
+                      <p>{product.description}</p>
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Col>
+                <Col md={3}>
+                  <Card>
+                    <ListGroup variant="flush">
+                      <ListGroup.Item>
+                        <Row>
+                          <Col>Status:</Col>
+                          <Col>
+                            {product.countInStock > 0 ? (
+                                <Badge pill variant="success">
+                                  In Stock
+                                </Badge>
+                            ) : (
+                                <Badge pill variant="danger">
+                                  Unavailable
+                                </Badge>
+                            )}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                      <ListGroup.Item>
+                        <Button
+                            onClick={addToCartHandler}
+                            className="btn-block"
+                            type="button"
+                            disabled={product.countInStock === 0}
+                        >
+                          Add to Cart
+                        </Button>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6} className="mt-4">
+                  <h2>Reviews</h2>
+                  {product.reviews.length === 0 && (
+                      <MessageBox>No Reviews</MessageBox>
+                  )}
+                  <ListGroup variant="flush">
+                    {product.reviews.map((review) => (
+                        <ListGroup.Item key={review._id}>
+                          <strong>{review.name}</strong>
+                          <Rating rating={review.rating}></Rating>
+                          <p>{review.createdAt.substring(0, 10)}</p>
+                          <p>{review.comment}</p>
+                        </ListGroup.Item>
+                    ))}
+                    <ListGroup.Item>
+                      <h2>Write a Review</h2>
+                      {loadingCreateReview && <LoadingBox></LoadingBox>}
+                      {userInfo ? (
+                          <Form onSubmit={submitHandler}>
+                            <FloatingLabel
+                                controlId="rating"
+                                label="Rating"
+                                className="mb-3"
+                            >
+                              <Form.Select
+                                  value={rating}
+                                  onChange={(e) => setRating(e.target.value)}
+                              >
+                                <option value="">Select...</option>
+                                <option value="1">1- Poor</option>
+                                <option value="2">2- Fair</option>
+                                <option value="3">3- Good</option>
+                                <option value="4">4- Very Good</option>
+                                <option value="5">5- Excellent</option>
+                              </Form.Select>
+                            </FloatingLabel>
+                            <FloatingLabel
+                                controlId="comment"
+                                label="Comment"
+                                className="mb-3"
+                            >
+                              <Form.Control
+                                  as="textarea"
+                                  placeholder="Comment"
+                                  value={comment}
+                                  onChange={(e) => setComment(e.target.value)}
+                              />
+                            </FloatingLabel>
+                            <Button variant="primary" type="submit">
+                              Submit
+                            </Button>
+                          </Form>
+                      ) : (
+                          <MessageBox>
+                            Please <Link to="/signin">Sign In</Link> to write a review
+                          </MessageBox>
+                      )}
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Col>
+              </Row>
+            </div>
+        )}
       </div>
-    </div>
   );
 }
+
 export default ProductScreen;

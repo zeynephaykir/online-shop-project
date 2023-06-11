@@ -9,6 +9,9 @@ import { Store } from '../Store';
 function Product(props) {
   const { product } = props;
 
+  // Use the product discount value
+  const discountedPrice = product.price - (product.price * product.discount / 100);
+
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
     cart: { cartItems },
@@ -29,25 +32,34 @@ function Product(props) {
   };
 
   return (
-    <Card>
-      <Link to={`/product/${product.slug}`}>
-        <img src={product.image} className="card-img-top" alt={product.name} />
-      </Link>
-      <Card.Body>
+      <Card>
         <Link to={`/product/${product.slug}`}>
-          <Card.Title>{product.name}</Card.Title>
+          <img src={product.image} className="card-img-top" alt={product.name} />
         </Link>
-        <Rating rating={product.rating} numReviews={product.numReviews} />
-        <Card.Text>${product.price}</Card.Text>
-        {product.countInStock === 0 ? (
-          <Button variant="light" disabled>
-            Out of stock
-          </Button>
-        ) : (
-          <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
-        )}
-      </Card.Body>
-    </Card>
+        <Card.Body>
+          <Link to={`/product/${product.slug}`}>
+            <Card.Title>{product.name}</Card.Title>
+          </Link>
+          <Rating rating={product.rating} numReviews={product.numReviews} />
+          <Card.Text>
+            {product.discount === 0 ? (
+                <strong>${product.price}</strong>
+            ) : (
+                <div>
+                  <strong>${discountedPrice.toFixed(2)}</strong> <del>${product.price}</del>
+                  <span className="badge bg-success">{product.discount}% off</span>
+                </div>
+            )}
+          </Card.Text>
+          {product.countInStock === 0 ? (
+              <Button variant="light" disabled>
+                Out of stock
+              </Button>
+          ) : (
+              <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
+          )}
+        </Card.Body>
+      </Card>
   );
 }
-export default Product;
+export default Product;
