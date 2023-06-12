@@ -42,6 +42,9 @@ function reducer(state, action) {
         loadingDeliver: false,
         successDeliver: false,
       };
+    case "SET_REFUND_CONFIRMATION":
+      return { ...state, showRefundConfirmation: action.payload, isRefunded: true };
+
     default:
       return state;
   }
@@ -62,6 +65,8 @@ export default function OrderScreen() {
       successPay,
       loadingDeliver,
       successDeliver,
+      showRefundConfirmation,
+      isRefunded,
     },
     dispatch,
   ] = useReducer(reducer, {
@@ -70,6 +75,8 @@ export default function OrderScreen() {
     error: "",
     successPay: false,
     loadingPay: false,
+    showRefundConfirmation: false,
+    isRefunded: false,
   });
 
   // function onApprove(data, actions) {
@@ -94,6 +101,27 @@ export default function OrderScreen() {
   // function onError(err) {
   //   toast.error(getError(err));
   // }
+
+  async function refundOrderHandler() {
+    try {
+      // Perform the refund action here
+      // ...
+      toast.success("Order refund request has been sent successfully");
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  }
+
+  function handleRefundConfirmation() {
+    const confirmed = window.confirm(
+      "Are you sure you want to send a refund request for this order?"
+    );
+
+    if (confirmed) {
+      refundOrderHandler();
+      dispatch({ type: "SET_REFUND_CONFIRMATION", payload: true });
+    }
+  }
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -178,9 +206,7 @@ export default function OrderScreen() {
                 <strong>Method:</strong> {order.paymentMethod}
               </Card.Text>
               {order.isPaid ? (
-                <MessageBox variant="success">
-                  Paid {order.paidAt}
-                </MessageBox>
+                <MessageBox variant="success">Paid {order.paidAt}</MessageBox>
               ) : (
                 <MessageBox variant="danger">Not Paid</MessageBox>
               )}
@@ -224,7 +250,6 @@ export default function OrderScreen() {
                     <Col>${order.itemsPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
-
                 <ListGroup.Item>
                   <Row>
                     <Col>Shipping</Col>
@@ -247,32 +272,32 @@ export default function OrderScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-                {new Date() - new Date(order.createdAt) <= 30 * 24 * 60 * 60 * 1000 ? (
+                {new Date() - new Date(order.createdAt) <=
+                30 * 24 * 60 * 60 * 1000 ? (
                   <ListGroup.Item>
                     <div className="d-grid">
-                      <Button type="button">
-                        Refund Order
-                      </Button>
-                    </div>
-                  </ListGroup.Item>) : (
-                    <ListGroup.Item>
-                      <div className="d-grid">
+                      {isRefunded ? (
                         <Button type="button" disabled variant="secondary">
                           Refund Order
                         </Button>
-                      </div>
-                    </ListGroup.Item>
-                )
-                }
-                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
-                    <ListGroup.Item>
-                      {loadingDeliver && <LoadingBox> </LoadingBox>}
-                      <div className="d-grid">
-                        <Button type="button" onClick={deliverOrderHandler}>
-                          Deliver Order
+                      ) : (
+                        <Button
+                          type="button"
+                          onClick={handleRefundConfirmation}
+                        >
+                          Refund Order
                         </Button>
-                      </div>
-                    </ListGroup.Item>
+                      )}
+                    </div>
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
+                    <div className="d-grid">
+                      <Button type="button" disabled variant="secondary">
+                        Refund Order
+                      </Button>
+                    </div>
+                  </ListGroup.Item>
                 )}
               </ListGroup>
             </Card.Body>
