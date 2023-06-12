@@ -1,23 +1,26 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import Order from '../models/orderModel.js';
-import User from '../models/userModel.js';
-import Product from '../models/productModel.js';
-import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
+import express from "express";
+import expressAsyncHandler from "express-async-handler";
+import Order from "../models/orderModel.js";
+import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
+import { isAuth, isAdmin, payOrderEmailTemplate } from "../utils.js";
 
 const orderRouter = express.Router();
+//const sgMail = require("@sendgrid/mail");
+const SENDGRID_API_KEY = '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'
+console.log(process.env.SENDGRID_API_KEY)
 
 orderRouter.get(
-    '/',
-    isAuth,
-    isAdmin,
-    expressAsyncHandler(async (req, res) => {
-        const orders = await Order.find().populate('user', 'name');
-        res.send(orders);
-    })
+  "/",
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const orders = await Order.find().populate("user", "name");
+    res.send(orders);
+  })
 );
 orderRouter.post(
-  '/',
+  "/",
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const newOrder = new Order({
@@ -32,12 +35,12 @@ orderRouter.post(
     });
 
     const order = await newOrder.save();
-    res.status(201).send({ message: 'New Order Created', order });
+    res.status(201).send({ message: "New Order Created", order });
   })
 );
 
 orderRouter.get(
-  '/summary',
+  "/summary",
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
@@ -46,7 +49,7 @@ orderRouter.get(
         $group: {
           _id: null,
           numOrders: { $sum: 1 },
-          totalSales: { $sum: '$totalPrice' },
+          totalSales: { $sum: "$totalPrice" },
         },
       },
     ]);
@@ -61,9 +64,9 @@ orderRouter.get(
     const dailyOrders = await Order.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           orders: { $sum: 1 },
-          sales: { $sum: '$totalPrice' },
+          sales: { $sum: "$totalPrice" },
         },
       },
       { $sort: { _id: 1 } },
@@ -71,7 +74,7 @@ orderRouter.get(
     const productCategories = await Product.aggregate([
       {
         $group: {
-          _id: '$category',
+          _id: "$category",
           count: { $sum: 1 },
         },
       },
@@ -81,101 +84,113 @@ orderRouter.get(
 );
 
 orderRouter.get(
-    '/mine',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-      const orders = await Order.find({ user: req.user._id });
-      res.send(orders);
-    })
-  );
-  
-orderRouter.get(
-    '/:id',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-      const order = await Order.findById(req.params.id);
-      if (order) {
-        res.send(order);
-      } else {
-        res.status(404).send({ message: 'Order Not Found' });
-      }
-    })
-  );
-
-orderRouter.put(
-    '/:id/deliver',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-        const order = await Order.findById(req.params.id).populate('user', 'email name');
-        if (order) {
-            order.isDelivered = true;
-            order.deliveredAt = Date.now();
-            await order.save();
-            res.send({ message: 'Order Delivered' });
-            mailgun()
-                .messages()
-                .send(
-                    {
-                        from: 'Mailgun Sandbox <postmaster@sandbox58aba97c80c34fabb117ca2643deea62.mailgun.org>',
-                        to: `<ali.sinan.cet@gmail.com>`,
-                        subject: `New order ${order._id}`,
-                        html: payOrderEmailTemplate(order),
-                    },
-                    (error, body) => {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log(body);
-                        }
-                    }
-                );
-        } else {
-            res.status(404).send({ message: 'Order Not Found' });
-        }
-    })
+  "/mine",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const orders = await Order.find({ user: req.user._id });
+    res.send(orders);
+  })
 );
 
-  orderRouter.put(
-    '/:id/pay',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-      const order = await Order.findById(req.params.id).populate(
-        'user',
-        'email name'
-      );
-      if (order) {
-        order.isPaid = true;
-        order.paidAt = Date.now();
-        order.paymentResult = {
-          id: req.body.id,
-          status: req.body.status,
-          update_time: req.body.update_time,
-          email_address: req.body.email_address,
-        };
-  
-        const updatedOrder = await order.save();
-        mailgun()
-        .messages()
-        .send(
-          {
-            from: 'Mailgun Sandbox <postmaster@sandbox58aba97c80c34fabb117ca2643deea62.mailgun.org>',
-            to: `${order.user.name} <${order.user.email}>`,
-            subject: `New order ${order._id}`,
-            html: payOrderEmailTemplate(order),
-          },
-          (error, body) => {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log(body);
-            }
-          }
-        );
-        res.send({ message: 'Order Paid', order: updatedOrder });
-      } else {
-        res.status(404).send({ message: 'Order Not Found' });
-      }
-    })
-  );
+orderRouter.get(
+  "/:id",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      res.send(order);
+    } else {
+      res.status(404).send({ message: "Order Not Found" });
+    }
+  })
+);
 
+orderRouter.put(
+  "/:id/deliver",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "email name"
+    );
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+      await order.save();
+
+      // Move the email sending code here
+      const sgMail = require("@sendgrid/mail");
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
+        to: "islekrana@gmail.com", // Change to your recipient
+        from: "crochetbysarin@gmail.com", // Change to your verified sender
+        subject: "Sending with SendGrid is Fun",
+        text: "and easy to do anywhere, even with Node.js",
+        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+      };
+
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log("Email sent");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      res.send({ message: "Order Delivered" });
+    } else {
+      res.status(404).send({ message: "Order Not Found" });
+    }
+    console.log(process.env.SENDGRID_API_KEY);
+  })
+);
+
+orderRouter.put(
+  "/:id/pay",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "email name"
+    );
+    if (order) {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+      order.paymentResult = {
+        id: req.body.id,
+        status: req.body.status,
+        update_time: req.body.update_time,
+        email_address: req.body.email_address,
+      };
+
+      const updatedOrder = await order.save();
+
+      // Send email using SendGrid
+      const sgMail = require("@sendgrid/mail");
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
+        to: "islekrana@gmail.com", // Change to your recipient
+        //to: order.user.email, // Recipient's email (using the user's email from the populated order)
+        from: "crochetbysarin@gmail.com", // Change to your verified sender email
+        subject: "Order Paid",
+        text: `Dear ${order.user.name},\n\nYour order has been paid successfully.`,
+        html: `<p>Dear ${order.user.name},</p><p>Your order has been paid successfully.</p>`,
+      };
+
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log("Email sent");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      res.send({ message: "Order Paid", order: updatedOrder });
+    } else {
+      res.status(404).send({ message: "Order Not Found" });
+    }
+  })
+);
 export default orderRouter;
