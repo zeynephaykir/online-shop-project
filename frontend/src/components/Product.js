@@ -1,14 +1,16 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import Rating from './Rating';
 import axios from 'axios';
 import { useContext } from 'react';
 import { Store } from '../Store';
 import { useEffect, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
+import {toast} from "react-toastify";
 
 function Product(props) {
+  const navigate = useNavigate();
   const { product } = props;
 
   // Use the product discount value
@@ -25,7 +27,7 @@ function Product(props) {
 
   useEffect(() => {
     setIsInWishlist(wishlistItems.some((item) => item._id === product._id));
-  }, [wishlistItems, product._id]);
+  }, [wishlistItems, product._id]);
 
 
   const addToCartHandler = async (item) => {
@@ -52,8 +54,10 @@ function Product(props) {
       const { data } = await axios.post(`/api/wishlist`, { productId }, config);
       await dispatch({ type: 'ADD_TO_WISHLIST', payload: data });
       setIsInWishlist(true);
+      navigate('/wishlist');
       console.log('Product added to wishlist');
     } catch (error) {
+      toast.error("This product is already in your wishlist")
       console.log(error);
     }
   };
@@ -71,8 +75,8 @@ function Product(props) {
       console.log('Product removed from wishlist');
     } catch (error) {
       console.log(error);
-    }
-  };
+      }
+  };
 
   return (
       <Card>
