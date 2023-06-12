@@ -26,6 +26,7 @@ productRouter.post(
       rating: 0,
       numReviews: 0,
       description: 'sample description',
+        discount: 0
     });
     const product = await newProduct.save();
     res.send({ message: 'Product Created', product });
@@ -48,6 +49,7 @@ productRouter.put(
       product.brand = req.body.brand;
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
+      product.discount = req.body.discount;
       await product.save();
       res.send({ message: 'Product Updated' });
     } else {

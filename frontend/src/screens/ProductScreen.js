@@ -111,30 +111,23 @@ function ProductScreen() {
     }
     try {
       const { data } = await axios.post(
-        `/api/products/${product._id}/reviews`,
-        { rating, comment, name: userInfo.name },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
+          `/api/products/${product._id}/reviews`,
+          { rating, comment, name: userInfo.name },
+          {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          }
       );
-
-      dispatch({
-        type: "CREATE_SUCCESS",
-      });
-      toast.success("Review submitted successfully");
-      product.reviews.unshift(data.review);
-      product.numReviews = data.numReviews;
-      product.rating = data.rating;
-      dispatch({ type: "REFRESH_PRODUCT", payload: product });
-      window.scrollTo({
-        behavior: "smooth",
-        top: reviewsRef.current.offsetTop,
-      });
-    } catch (error) {
-      toast.error(getError(error));
-      dispatch({ type: "CREATE_FAIL" });
+      toast.success(data.message);
+      dispatch({ type: 'CREATE_SUCCESS' });
+      setRating(0);
+      setComment('');
+    } catch (err) {
+      toast.error(getError(err));
+      dispatch({ type: 'CREATE_FAIL' });
     }
   };
+
+  const discountedPrice = product.price - (product.price * product.discount / 100);
 
   return loading ? (
     <LoadingBox />
@@ -165,6 +158,8 @@ function ProductScreen() {
               ></Rating>
             </ListGroup.Item>
             <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
+            <ListGroup.Item>Discount : {product.discount}%</ListGroup.Item>
+            <ListGroup.Item>Discounted Price: <span style={{ fontWeight: 'bold'}}>${discountedPrice}</span></ListGroup.Item>
             <ListGroup.Item>
               Description:
               <p>{product.description}</p>
@@ -175,12 +170,25 @@ function ProductScreen() {
           <Card>
             <Card.Body>
               <ListGroup variant="flush">
-                <ListGroup.Item>
+              <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>${product.price}</Col>
+                    <Col>
+                      {product.discount > 0 ? (
+                        <>
+                          <del>${product.price}</del>
+                          <span style={{ fontWeight: 'bold', color: 'red' }}>
+                            ${discountedPrice.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ fontWeight: 'bold' }}>
+                          ${product.price}
+                        </span>
+                      )}
+                    </Col>
                   </Row>
-                </ListGroup.Item>
+              </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Status:</Col>

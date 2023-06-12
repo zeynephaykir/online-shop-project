@@ -59,7 +59,12 @@ const WishlistScreen = () => {
                   <Card.Body>
                     <Card.Title>{item.name}</Card.Title>
                     <Card.Text>
-                      ${discountedPrice.toFixed(2)}{' '}
+                      <span
+                        style={{ color: item.discount > 0 ? 'red' : 'inherit' }}
+                      >
+                        ${discountedPrice.toFixed(2)}
+                      </span>{' '}
+                      
                       {item.discount > 0 && (
                         <>
                           <del className="ml-2">${item.price}</del>
