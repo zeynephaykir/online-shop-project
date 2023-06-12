@@ -8,6 +8,7 @@ import MessageBox from '../components/MessageBox';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -25,6 +26,7 @@ const reducer = (state, action) => {
       return state;
   }
 };
+
 export default function DashboardScreen() {
   const [{ loading, summary, error }, dispatch] = useReducer(reducer, {
     loading: true,
@@ -35,6 +37,7 @@ export default function DashboardScreen() {
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [isDateRangeSelected, setIsDateRangeSelected] = useState(false);
 
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
@@ -44,14 +47,19 @@ export default function DashboardScreen() {
     setEndDate(event.target.value);
   };
 
+  const handleApplyButtonClick = () => {
+    setIsDateRangeSelected(true);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        dispatch({ type: 'FETCH_REQUEST' });
         const { data } = await axios.get('/api/orders/summary', {
           headers: { Authorization: `Bearer ${userInfo.token}` },
           params: {
-            startDate: startDate, // Pass the selected start date as a query parameter
-            endDate: endDate, // Pass the selected end date as a query parameter
+            startDate: startDate,
+            endDate: endDate,
           },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -62,25 +70,31 @@ export default function DashboardScreen() {
         });
       }
     };
-    
+
+    if (isDateRangeSelected) {
       fetchData();
-    
-  }, [userInfo, startDate, endDate]);
+      setIsDateRangeSelected(false);
+    }
+  }, [userInfo, startDate, endDate, isDateRangeSelected]);
 
   return (
     <div>
-      
       <Row>
         <Col md={3}>
-          <label htmlFor="startDate">Start Date:</label>
+          <label htmlFor="startDate">Start Date: &nbsp; &nbsp;</label>
           <input type="date" id="startDate" onChange={handleStartDateChange} />
         </Col>
         <Col md={3}>
-          <label htmlFor="endDate">End Date:</label>
+          <label htmlFor="endDate">End Date: &nbsp; &nbsp;</label>
           <input type="date" id="endDate" onChange={handleEndDateChange} />
         </Col>
+        <Col md={2}>
+          <Button variant="primary" onClick={handleApplyButtonClick} disabled={!startDate || !endDate}>
+            Apply
+          </Button>
+        </Col>
       </Row>
-  
+
       <Row>
         <Col md={12}>
           <h1>Dashboard</h1>
@@ -95,11 +109,9 @@ export default function DashboardScreen() {
                   <Card>
                     <Card.Body>
                       <Card.Title>
-                        {summary.users && summary.users[0]
-                          ? summary.users[0].numUsers
-                          : 0}
+                        {summary.users && summary.users[0] ? summary.users[0].numUsers : 0}
                       </Card.Title>
-                      <Card.Text> Users</Card.Text>
+                      <Card.Text>Users</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -107,11 +119,9 @@ export default function DashboardScreen() {
                   <Card>
                     <Card.Body>
                       <Card.Title>
-                        {summary.orders && summary.users[0]
-                          ? summary.orders[0].numOrders
-                          : 0}
+                        {summary.orders && summary.users[0] ? summary.orders[0].numOrders : 0}
                       </Card.Title>
-                      <Card.Text> Orders</Card.Text>
+                      <Card.Text>Orders</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -119,12 +129,9 @@ export default function DashboardScreen() {
                   <Card>
                     <Card.Body>
                       <Card.Title>
-                        $
-                        {summary.orders && summary.users[0]
-                          ? summary.orders[0].totalSales.toFixed(2)
-                          : 0}
+                        ${summary.orders && summary.users[0] ? summary.orders[0].totalSales.toFixed(2) : 0}
                       </Card.Title>
-                      <Card.Text> Total Sales</Card.Text>
+                      <Card.Text>Total Sales</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -132,12 +139,9 @@ export default function DashboardScreen() {
                   <Card>
                     <Card.Body>
                       <Card.Title>
-                        $
-                        {summary.orders && summary.users[0]
-                          ? summary.orders[0].totalSales.toFixed(2) / 2
-                          : 0}
+                        ${summary.orders && summary.users[0] ? (summary.orders[0].totalSales / 2).toFixed(2) : 0}
                       </Card.Title>
-                      <Card.Text> Revenue</Card.Text>
+                      <Card.Text>Revenue</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -152,46 +156,40 @@ export default function DashboardScreen() {
                     height="400px"
                     chartType="AreaChart"
                     loader={<div>Loading Chart...</div>}
-                    data={[
-                      ['Date', 'Sales'],
-                      ...summary.dailyOrders.map((x) => [x._id, x.sales]),
-                    ]}
+                    data={[['Date', 'Sales'], ...summary.dailyOrders.map((x) => [x._id, x.sales])]}
                   />
                 )}
-                </div>
+              </div>
 
-                <div className="my-3">
-                  <h2>Revenue</h2>
-                  {summary.dailyOrders.length === 0 ? (
-                    <MessageBox>No Sale</MessageBox>
-                  ) : (
-                    <Chart
-                      width="100%"
-                      height="400px"
-                      chartType="AreaChart"
-                      loader={<div>Loading Chart...</div>}
-                      data={[
-                       ['Date', 'Revenue'],
-                       ...summary.dailyOrders.map((x) => [x._id, x.sales / 2]),
-                      ]}
-                    />
-                  )}
-                </div>
-              
-                <div className="my-3">
-                  <h2>Categories</h2>
-                  {summary.productCategories.length === 0 ? (
-                    <MessageBox>No Category</MessageBox>
-                  ) : (
-                    <Chart
-                      width="100%"
-                      height="400px"
-                      chartType="PieChart"
-                      loader={<div>Loading Chart...</div>}
-                      data={[
-                        ['Category', 'Products'],
-                        ...summary.productCategories.map((x) => [x._id, x.count]),
-                      ]}
+              <div className="my-3">
+                <h2>Revenue</h2>
+                {summary.dailyOrders.length === 0 ? (
+                  <MessageBox>No Sale</MessageBox>
+                ) : (
+                  <Chart
+                    width="100%"
+                    height="400px"
+                    chartType="AreaChart"
+                    loader={<div>Loading Chart...</div>}
+                    data={[['Date', 'Revenue'], ...summary.dailyOrders.map((x) => [x._id, x.sales / 2])]}
+                  />
+                )}
+              </div>
+
+              <div className="my-3">
+                <h2>Categories</h2>
+                {summary.productCategories.length === 0 ? (
+                  <MessageBox>No Category</MessageBox>
+                ) : (
+                  <Chart
+                    width="100%"
+                    height="400px"
+                    chartType="PieChart"
+                    loader={<div>Loading Chart...</div>}
+                    data={[
+                      ['Category', 'Products'],
+                      ...summary.productCategories.map((x) => [x._id, x.count]),
+                    ]}
                   />
                 )}
               </div>
@@ -202,4 +200,3 @@ export default function DashboardScreen() {
     </div>
   );
 }
-
