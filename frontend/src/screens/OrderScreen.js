@@ -224,6 +224,7 @@ export default function OrderScreen() {
                     <Col>${order.itemsPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
+
                 <ListGroup.Item>
                   <Row>
                     <Col>Shipping</Col>
@@ -246,6 +247,23 @@ export default function OrderScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+                {new Date() - new Date(order.createdAt) <= 30 * 24 * 60 * 60 * 1000 ? (
+                  <ListGroup.Item>
+                    <div className="d-grid">
+                      <Button type="button">
+                        Refund Order
+                      </Button>
+                    </div>
+                  </ListGroup.Item>) : (
+                    <ListGroup.Item>
+                      <div className="d-grid">
+                        <Button type="button" disabled variant="secondary">
+                          Refund Order
+                        </Button>
+                      </div>
+                    </ListGroup.Item>
+                )
+                }
                 {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                     <ListGroup.Item>
                       {loadingDeliver && <LoadingBox> </LoadingBox>}
