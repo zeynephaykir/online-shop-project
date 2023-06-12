@@ -159,7 +159,7 @@ function ProductScreen() {
             </ListGroup.Item>
             <ListGroup.Item>Price : ${product.price}</ListGroup.Item>
             <ListGroup.Item>Discount : {product.discount}%</ListGroup.Item>
-            <ListGroup.Item>Discounted Price : ${discountedPrice}</ListGroup.Item>
+            <ListGroup.Item>Discounted Price: <span style={{ fontWeight: 'bold'}}>${discountedPrice}</span></ListGroup.Item>
             <ListGroup.Item>
               Description:
               <p>{product.description}</p>
@@ -170,12 +170,25 @@ function ProductScreen() {
           <Card>
             <Card.Body>
               <ListGroup variant="flush">
-                <ListGroup.Item>
+              <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>${product.price}</Col>
+                    <Col>
+                      {product.discount > 0 ? (
+                        <>
+                          <del>${product.price}</del>
+                          <span style={{ fontWeight: 'bold', color: 'red' }}>
+                            ${discountedPrice.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ fontWeight: 'bold' }}>
+                          ${product.price}
+                        </span>
+                      )}
+                    </Col>
                   </Row>
-                </ListGroup.Item>
+              </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Status:</Col>
