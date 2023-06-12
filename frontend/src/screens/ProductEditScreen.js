@@ -141,19 +141,35 @@ export default function ProductEditScreen() {
             <Form onSubmit={submitHandler}>
               <Form.Group className="mb-3" controlId="name">
                 <Form.Label>Name</Form.Label>
-                <Form.Control
-                    value={name}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={name}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="slug">
                 <Form.Label>Slug</Form.Label>
-                <Form.Control
-                    value={slug}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={slug}
+                        onChange={(e) => setSlug(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={slug}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="name">
                 <Form.Label>Price</Form.Label>
@@ -173,32 +189,56 @@ export default function ProductEditScreen() {
               </Form.Group>
               <Form.Group className="mb-3" controlId="imageFile">
                 <Form.Label>Upload File</Form.Label>
-                <Form.Control type="file" disabled />
+                <Form.Control type="file"  />
                 {loadingUpload && <LoadingBox></LoadingBox>}
               </Form.Group>
               <Form.Group className="mb-3" controlId="image">
                 <Form.Label>Image File</Form.Label>
-                <Form.Control
-                    value={image}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={image}
+                        onChange={(e) => setImage(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={image}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="category">
                 <Form.Label>Category</Form.Label>
-                <Form.Control
-                    value={category}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={category}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="brand">
                 <Form.Label>Brand</Form.Label>
-                <Form.Control
-                    value={brand}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={brand}
+                        onChange={(e) => setBrand(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={brand}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="countInStock">
                 <Form.Label>Count In Stock</Form.Label>
@@ -218,14 +258,23 @@ export default function ProductEditScreen() {
               </Form.Group>
               <Form.Group className="mb-3" controlId="description">
                 <Form.Label>Description</Form.Label>
-                <Form.Control
-                    value={description}
-                    disabled
-                    required
-                />
+                {isProductManager ? (
+                    <Form.Control
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                    />
+                ) : (
+                    <Form.Control
+                        value={description}
+                        disabled
+                        required
+                    />
+                )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="discount">
                 <Form.Label>Discount</Form.Label>
+                {isSalesManager ? (
                 <Form.Control
                     type="number"
                     min="0"
@@ -233,7 +282,11 @@ export default function ProductEditScreen() {
                     value={discount}
                     onChange={(e) => setDiscount(e.target.value)}
                     required
-                />
+                /> ) : (<Form.Control
+                    value={discount}
+                    disabled
+                    required
+                /> )}
               </Form.Group>
               <div className="mb-3">
                 <Button disabled={loadingUpdate} type="submit">

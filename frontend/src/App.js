@@ -199,14 +199,6 @@ function App() {
                 }
               />
               <Route
-                path="/wishlist"
-                element={
-                  <ProtectedRoute>
-                    <WishlistScreen />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/orderhistory"
                 element={
                   <ProtectedRoute>
