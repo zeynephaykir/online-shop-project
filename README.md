@@ -7,4 +7,4 @@ npm install --force
 ### First on backend folder, run in terminal:
 npm start
 ### At the same time on frontend folder, run in terminal:
-npm start
+npm start# OnlineShop-Project
