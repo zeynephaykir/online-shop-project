@@ -7,7 +7,7 @@ import { isAuth, isAdmin, payOrderEmailTemplate } from "../utils.js";
 
 const orderRouter = express.Router();
 //const sgMail = require("@sendgrid/mail");
-const SENDGRID_API_KEY = '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'
+const SENDGRID_API_KEY = 'sendgrid api key here'
 console.log(process.env.SENDGRID_API_KEY)
 
 orderRouter.get(
