@@ -18,7 +18,7 @@ uploadRouter.post(
   async (req, res) => {
     cloudinary.config({
         cloud_name: 'insert cloud name here',
-        api_key: 'insert api key here',
+        api_key: 'insert api key here..',
         api_secret: 'insert api secret here',
         });
     const streamUpload = (req) => {
